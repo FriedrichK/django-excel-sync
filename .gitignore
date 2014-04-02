@@ -1,0 +1,13 @@
+# Linux
+*~
+
+# Python
+*.pyc
+venv/
+dist/
+django_excel_sync.egg-info/
+
+# Application
+
+# Sublime Text
+*sublime*
