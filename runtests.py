@@ -17,7 +17,7 @@ settings.configure(
         'django.contrib.sessions',
         'django.contrib.admin',
         'excel_sync',
-        'excel_sync.tests',
+        #'excel_sync.tests',
     )
 )
 
