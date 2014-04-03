@@ -23,8 +23,8 @@ class SpreadsheetMixin(object):
     def get_spreadsheet_settings(self):
         return {
             'name': self.name,
-            'column_number': self.get_spreadsheet_column_number(),
-            'column_row': self.get_spreadsheet_column_row()
+            'column': self.get_spreadsheet_column_number(),
+            'label_row': self.get_spreadsheet_column_row()
         }
 
     def _validate_custom_field_options(self, **kwargs):

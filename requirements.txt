@@ -1,2 +1,4 @@
 Django==1.6.2
-mockito==0.5.1
+mock==1.0.1
+mockito==0.5.2
+xlrd==0.9.2
