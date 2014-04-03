@@ -6,6 +6,7 @@
 venv/
 dist/
 django_excel_sync.egg-info/
+build/
 
 # Application
 database.db
