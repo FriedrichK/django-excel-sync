@@ -3,6 +3,7 @@ import sys
 from django.conf import settings
 
 DIRNAME = os.path.dirname(__file__)
+ABSDIRNAME = os.path.abspath(DIRNAME)
 settings.configure(
     DEBUG=True,
     DATABASES={
@@ -18,7 +19,9 @@ settings.configure(
         'django.contrib.admin',
         'excel_sync',
         #'excel_sync.tests',
-    )
+    ),
+    TESTS=os.path.join(ABSDIRNAME, 'excel_sync', 'tests'),
+    TEST_DATA=os.path.join(ABSDIRNAME, 'excel_sync', 'tests', 'data'),
 )
 
 

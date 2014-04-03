@@ -15,7 +15,7 @@ class ExcelSpreadsheetSource(BaseSpreadsheetSource):
     def _get_columns_from_field_settings(self, field_settings):
         columns = []
         for field_setting in field_settings:
-            columns.append(field_setting['column'])
+            columns.append(field_setting['column'] - 1)
         return columns
 
     def _get_filtered_rows(self, field_settings, columns, row_start):
@@ -24,7 +24,7 @@ class ExcelSpreadsheetSource(BaseSpreadsheetSource):
         rows = self._get_rows_from_worksheet(worksheet, columns, row_start)
         return rows
 
-    def _open_xlrd_source(self, path, columns, row_start):
+    def _open_xlrd_source(self, path):
         return xlrd.open_workbook(path)
 
     def _get_rows_from_worksheet(self, worksheet, columns, row_start):
