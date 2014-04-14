@@ -15,7 +15,7 @@ from excel_sync.db.models.fields import CharField, IntegerField, FloatField
 from excel_sync.tests._tools import generate_model, generate_rows
 
 
-class MixinAndCharFieldIntegrationTestCase(TestCase):
+class MixinAndFieldsIntegrationTestCase(TestCase):
 
     def test_model_saves_expected_rows(self):
         Person = build_test_model_class()
