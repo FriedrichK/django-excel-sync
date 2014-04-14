@@ -1,4 +1,4 @@
-from django.db.models.fields import CharField as VanillaCharField
+from django.db.models.fields import CharField as VanillaCharField, IntegerField as VanillaIntegerField
 from django.db import models
 from django.core.exceptions import FieldError
 
@@ -45,3 +45,11 @@ class CharField(SpreadsheetMixin, VanillaCharField):
 
     def __init__(self, *args, **kwargs):
         super(CharField, self).__init__(*args, **kwargs)
+
+
+class IntegerField(SpreadsheetMixin, VanillaIntegerField):
+    description = "An IntegerField using data from a spreadsheet"
+    __metaclass__ = models.SubfieldBase
+
+    def __init__(self, *args, **kwargs):
+        super(IntegerField, self).__init__(*args, **kwargs)
