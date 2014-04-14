@@ -9,7 +9,7 @@ loading.cache.loaded = False
 from mockito import *
 
 from excel_sync.contrib.spreadsheet.excel import ExcelSpreadsheetSource
-from excel_sync.db.models.fields import CharField, IntegerField
+from excel_sync.db.models.fields import CharField, IntegerField, FloatField
 
 #from excel_sync.tests.models import Person
 from excel_sync.tests._tools import generate_model, generate_rows
@@ -30,14 +30,15 @@ class MixinAndCharFieldIntegrationTestCase(TestCase):
         fields = {
             'first_name': CharField(max_length=30, spreadsheet_column_number=1, spreadsheet_column_row=1),
             'last_name': CharField(max_length=30, spreadsheet_column_number=2, spreadsheet_column_row=2),
-            'age': IntegerField(max_length=30, spreadsheet_column_number=5, spreadsheet_column_row=2)
+            'age': IntegerField(max_length=30, spreadsheet_column_number=5, spreadsheet_column_row=2),
+            'correct': FloatField(spreadsheet_column_number=7, spreadsheet_column_row=2)
         }
         Employees = build_model("employees", spreadsheet_source, fields)
         call_command('syncdb', verbosity=0, interactive=False)
 
         actual = Employees.objects.all().values()
 
-        expected = [{'first_name': u'John', 'last_name': u'Doe', u'id': 1, u'age': 21}, {'first_name': u'Jane', 'last_name': u'D.', u'id': 2, u'age': 32}]
+        expected = [{'first_name': u'John', 'last_name': u'Doe', u'id': 1, u'age': 21, u'correct': 0.5}, {'first_name': u'Jane', 'last_name': u'D.', u'id': 2, u'age': 32, u'correct': 0.933}]
         self.assertEqual(expected[0], actual[0])
         self.assertEqual(expected[1], actual[1])
 
