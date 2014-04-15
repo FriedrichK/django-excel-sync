@@ -6,11 +6,16 @@ from django.core.exceptions import FieldError
 class SpreadsheetMixin(object):
 
     required_field_options = ['spreadsheet_column_number', 'spreadsheet_column_row']
+    optional_field_options = ['spreadsheet_percentage', 'spreadsheet_absolute', 'spreadsheet_reference_column_number']
 
     def __init__(self, *args, **kwargs):
         self._validate_custom_field_options(**kwargs)
         self._spreadsheet_column_number = kwargs['spreadsheet_column_number']
         self._spreadsheet_column_row = kwargs['spreadsheet_column_row']
+        self._spreadsheet_options = {}
+        for option in self.optional_field_options:
+            if option in kwargs:
+                self._spreadsheet_options[option] = kwargs[option]
         kwargs = self._remove_custom_field_options(**kwargs)
         super(SpreadsheetMixin, self).__init__(*args, **kwargs)
 
@@ -20,11 +25,15 @@ class SpreadsheetMixin(object):
     def get_spreadsheet_column_row(self):
         return self._spreadsheet_column_row
 
+    def get_spreadsheet_options(self):
+        return self._spreadsheet_options
+
     def get_spreadsheet_settings(self):
         return {
             'name': self.name,
             'column': self.get_spreadsheet_column_number(),
-            'label_row': self.get_spreadsheet_column_row()
+            'label_row': self.get_spreadsheet_column_row(),
+            'options': self.get_spreadsheet_options()
         }
 
     def _validate_custom_field_options(self, **kwargs):
@@ -36,6 +45,8 @@ class SpreadsheetMixin(object):
     def _remove_custom_field_options(self, **kwargs):
         for required_field_option in self.required_field_options:
             del kwargs[required_field_option]
+        for option in self._spreadsheet_options:
+            del kwargs[option]
         return kwargs
 
 

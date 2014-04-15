@@ -10,6 +10,7 @@ class ExcelSpreadsheetSource(BaseSpreadsheetSource):
         row_start = self.get('row_start')
         filtered_rows = self._get_filtered_rows(field_settings, columns, row_start)
         database_rows = self._generate_database_rows(field_settings, filtered_rows)
+        database_rows = self._process_options(field_settings, database_rows)
         return database_rows
 
     def _get_columns_from_field_settings(self, field_settings):
@@ -19,10 +20,13 @@ class ExcelSpreadsheetSource(BaseSpreadsheetSource):
         return columns
 
     def _get_filtered_rows(self, field_settings, columns, row_start):
-        workbook = self._open_xlrd_source(self.get('data_source'))
-        worksheet = workbook.sheet_by_name(self.get('worksheet_name'))
+        worksheet = self._get_worksheet()
         rows = self._get_rows_from_worksheet(worksheet, columns, row_start)
         return rows
+
+    def _get_worksheet(self):
+        workbook = self._open_xlrd_source(self.get('data_source'))
+        return workbook.sheet_by_name(self.get('worksheet_name'))
 
     def _open_xlrd_source(self, path):
         return xlrd.open_workbook(path)
@@ -77,3 +81,20 @@ class ExcelSpreadsheetSource(BaseSpreadsheetSource):
         for i in range(len(field_settings)):
             database_row[field_settings[i]['name']] = row[i]
         return database_row
+
+    def _get_values_for_column(self, column, starting_row):
+        column = column - 1
+        worksheet = self._get_worksheet()
+        values = []
+
+        num_rows = worksheet.nrows - 1
+        num_cells = worksheet.ncols - 1
+
+        curr_row = -1
+        while curr_row < num_rows:
+            curr_row += 1
+            if not self._start_of_data_rows_reached(curr_row, starting_row):
+                continue
+            cell = self._get_cells_from_row(worksheet, num_cells, curr_row, [column])[0]
+            values.append(cell)
+        return values
