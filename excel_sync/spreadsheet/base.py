@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-import math
 
 from django.core.exceptions import FieldError
 
@@ -47,7 +46,7 @@ class BaseSpreadsheetSource(object):
         values_for_reference_column = self._get_values_for_column(reference_column_number, values_start_at)
         value_field_name = field_setting['name']
         for i in range(len(database_rows)):
-            if math.isnan(database_rows[i][value_field_name]) or math.isnan(values_for_reference_column[i]):
+            if not self._is_a_number(database_rows[i][value_field_name]) or not self._is_a_number(values_for_reference_column[i]):
                 continue
             pcnt = database_rows[i][value_field_name] / values_for_reference_column[i]
             database_rows[i][value_field_name] = int(pcnt * 100.0) / 100.0
