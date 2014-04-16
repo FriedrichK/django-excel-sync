@@ -59,6 +59,23 @@ class MixinAndFieldsIntegrationTestCase(TestCase):
         self.assertEqual(expected[0], actual[0])
         self.assertEqual(expected[1], actual[1])
 
+    def test_model_with_real_data_saves_expected_rows_with_absolute_and_relative_columns_where_reference_is_zero(self):
+        spreadsheet_source = ExcelSpreadsheetSource(data_source=os.path.join(settings.TEST_DATA, 'testworksheet03.xls'), worksheet_name='Sheet1', row_start=3)
+        fields = {
+            'correct': FloatField(max_length=30, spreadsheet_column_number=2, spreadsheet_column_row=2),
+            'questions': IntegerField(max_length=30, spreadsheet_column_number=1, spreadsheet_column_row=2),
+            'correct_pcnt': FloatField(max_length=30, spreadsheet_column_number=3, spreadsheet_column_row=3, spreadsheet_percentage=True, spreadsheet_reference_column_number=1),
+            'correct_abs': IntegerField(max_length=30, spreadsheet_column_number=2, spreadsheet_column_row=3, spreadsheet_absolute=True, spreadsheet_reference_column_number=1),
+        }
+        Employees = build_model("employees3", spreadsheet_source, fields)
+        call_command('syncdb', verbosity=0, interactive=False)
+
+        actual = Employees.objects.all().values()
+
+        expected = [{u'id': 1, u'questions': 0, u'correct': 0.5, u'correct_pcnt': 0.0, u'correct_abs': 0}, {u'id': 2, u'questions': 0, u'correct': 0.933, u'correct_pcnt': 0.0, u'correct_abs': 0}]
+        self.assertEqual(expected[0], actual[0])
+        self.assertEqual(expected[1], actual[1])
+
 
 def build_test_model_class():
     name = "Person"

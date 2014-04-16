@@ -41,32 +41,43 @@ class BaseSpreadsheetSource(object):
         return database_rows
 
     def _process_option_percentage(self, field_setting, database_rows):
-        reference_column_number = field_setting['options']['spreadsheet_reference_column_number']
-        values_start_at = field_setting['label_row']
-        values_for_reference_column = self._get_values_for_column(reference_column_number, values_start_at)
-        value_field_name = field_setting['name']
-        for i in range(len(database_rows)):
-            if not self._is_a_number(database_rows[i][value_field_name]) or not self._is_a_number(values_for_reference_column[i]):
-                continue
-            pcnt = database_rows[i][value_field_name] / values_for_reference_column[i]
-            database_rows[i][value_field_name] = int(pcnt * 100.0) / 100.0
-        return database_rows
+        processing_function = processing_function_percentage
+        return self._process_option_with_reference(field_setting, database_rows, processing_function)
 
     def _process_option_absolute(self, field_setting, database_rows):
+        processing_function = processing_function_absolute
+        return self._process_option_with_reference(field_setting, database_rows, processing_function)
+
+    def _process_option_with_reference(self, field_setting, database_rows, processing_function):
         reference_column_number = field_setting['options']['spreadsheet_reference_column_number']
         values_start_at = field_setting['label_row']
         values_for_reference_column = self._get_values_for_column(reference_column_number, values_start_at)
         value_field_name = field_setting['name']
         for i in range(len(database_rows)):
-            if not self._is_a_number(database_rows[i][value_field_name]) or not self._is_a_number(values_for_reference_column[i]):
+            if not is_a_number(database_rows[i][value_field_name]) or not is_a_number(values_for_reference_column[i]):
                 continue
-            absolute = int(round(database_rows[i][value_field_name] * values_for_reference_column[i]))
-            database_rows[i][value_field_name] = absolute
+            result = processing_function(database_rows[i][value_field_name], values_for_reference_column[i])
+            database_rows[i][value_field_name] = result
         return database_rows
 
-    def _is_a_number(self, candidate):
-        try:
-            float(candidate)
-            return True
-        except ValueError:
-            return False
+
+def processing_function_percentage(value, reference_value):
+    if value is None or reference_value is None:
+        return None
+    if value == 0 or reference_value == 0:
+        return 0
+    return int(value / reference_value * 100.0) / 100.0
+
+
+def processing_function_absolute(value, reference_value):
+    if value is None or reference_value is None:
+        return None
+    return int(round(value * reference_value))
+
+
+def is_a_number(candidate):
+    try:
+        float(candidate)
+        return True
+    except ValueError:
+        return False
