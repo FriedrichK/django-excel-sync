@@ -43,18 +43,19 @@ class MixinAndFieldsIntegrationTestCase(TestCase):
         self.assertEqual(expected[1], actual[1])
 
     def test_model_with_real_data_saves_expected_rows_with_absolute_and_relative_columns(self):
-        spreadsheet_source = ExcelSpreadsheetSource(data_source=os.path.join(settings.TEST_DATA, 'testworksheet01.xls'), worksheet_name='Sheet1', row_start=3)
+        spreadsheet_source = ExcelSpreadsheetSource(data_source=os.path.join(settings.TEST_DATA, 'testworksheet02.xls'), worksheet_name='Sheet1', row_start=3)
         fields = {
-            'first_name': CharField(max_length=30, spreadsheet_column_number=1, spreadsheet_column_row=1),
-            'correct_pcnt': FloatField(max_length=30, spreadsheet_column_number=8, spreadsheet_column_row=3, spreadsheet_percentage=True, spreadsheet_reference_column_number=6),
-            'correct_abs': IntegerField(max_length=30, spreadsheet_column_number=7, spreadsheet_column_row=3, spreadsheet_absolute=True, spreadsheet_reference_column_number=6),
+            'correct': FloatField(max_length=30, spreadsheet_column_number=2, spreadsheet_column_row=2),
+            'questions': IntegerField(max_length=30, spreadsheet_column_number=1, spreadsheet_column_row=2),
+            'correct_pcnt': FloatField(max_length=30, spreadsheet_column_number=3, spreadsheet_column_row=3, spreadsheet_percentage=True, spreadsheet_reference_column_number=1),
+            'correct_abs': IntegerField(max_length=30, spreadsheet_column_number=2, spreadsheet_column_row=3, spreadsheet_absolute=True, spreadsheet_reference_column_number=1),
         }
         Employees = build_model("employees2", spreadsheet_source, fields)
         call_command('syncdb', verbosity=0, interactive=False)
 
         actual = Employees.objects.all().values()
 
-        expected = [{u'id': 1, u'first_name': u'John', u'correct_pcnt': 0.5, u'correct_abs': 15}, {u'id': 2, u'first_name': u'Jane', u'correct_pcnt': 0.93, u'correct_abs': 28}]
+        expected = [{u'id': 1, u'questions': 30, u'correct': 0.5, u'correct_pcnt': 0.5, u'correct_abs': 15}, {u'id': 2, u'questions': 30, u'correct': 0.933, u'correct_pcnt': 0.93, u'correct_abs': 28}]
         self.assertEqual(expected[0], actual[0])
         self.assertEqual(expected[1], actual[1])
 

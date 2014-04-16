@@ -78,8 +78,17 @@ class ExcelSpreadsheetSource(BaseSpreadsheetSource):
 
     def _build_database_row(self, field_settings, row):
         database_row = {}
-        for i in range(len(field_settings)):
-            database_row[field_settings[i]['name']] = row[i]
+        indices = {}
+        index = 0
+        for field_setting in field_settings:
+            column = field_setting['column']
+            if column in indices:
+                index_to_use = indices[column]
+            else:
+                index_to_use = index
+                index += 1
+                indices[column] = index_to_use
+            database_row[field_setting['name']] = row[index_to_use]
         return database_row
 
     def _get_values_for_column(self, column, starting_row):
