@@ -1,5 +1,7 @@
 import os
 
+from unittest import skip
+
 from django.test import TestCase
 from django.conf import settings
 

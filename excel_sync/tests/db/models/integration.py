@@ -1,5 +1,7 @@
 import os
 
+from unittest import skip
+
 from django.conf import settings
 from django.test import TestCase
 from django.core.management import call_command
@@ -43,19 +45,19 @@ class MixinAndFieldsIntegrationTestCase(TestCase):
         self.assertEqual(expected[1], actual[1])
 
     def test_model_with_real_data_saves_expected_rows_with_absolute_and_relative_columns(self):
-        spreadsheet_source = ExcelSpreadsheetSource(data_source=os.path.join(settings.TEST_DATA, 'testworksheet02.xls'), worksheet_name='Sheet1', row_start=3)
+        spreadsheet_source = ExcelSpreadsheetSource(data_source=os.path.join(settings.TEST_DATA, 'testworksheet02.xls'), worksheet_name='Sheet1', row_start=1)
         fields = {
             'correct': FloatField(max_length=30, spreadsheet_column_number=2, spreadsheet_column_row=2),
-            'questions': IntegerField(max_length=30, spreadsheet_column_number=1, spreadsheet_column_row=2),
-            'correct_pcnt': FloatField(max_length=30, spreadsheet_column_number=3, spreadsheet_column_row=3, spreadsheet_percentage=True, spreadsheet_reference_column_number=1),
-            'correct_abs': IntegerField(max_length=30, spreadsheet_column_number=2, spreadsheet_column_row=3, spreadsheet_absolute=True, spreadsheet_reference_column_number=1),
+            'questions': IntegerField(max_length=30, spreadsheet_column_number=1, spreadsheet_column_row=1),
+            'correct_pcnt': FloatField(max_length=30, spreadsheet_column_number=3, spreadsheet_column_row=1, spreadsheet_percentage=True, spreadsheet_reference_column_number=1),
+            'correct_abs': IntegerField(max_length=30, spreadsheet_column_number=2, spreadsheet_column_row=1, spreadsheet_absolute=True, spreadsheet_reference_column_number=1),
         }
         Employees = build_model("employees2", spreadsheet_source, fields)
         call_command('syncdb', verbosity=0, interactive=False)
 
         actual = Employees.objects.all().values()
 
-        expected = [{u'id': 1, u'questions': 30, u'correct': 0.5, u'correct_pcnt': 0.5, u'correct_abs': 15}, {u'id': 2, u'questions': 30, u'correct': 0.933, u'correct_pcnt': 0.93, u'correct_abs': 28}]
+        expected = [{u'id': 1, u'questions': 30, u'correct': 0.5, u'correct_pcnt': 0.5, u'correct_abs': 15}, {u'id': 2, u'questions': 20, u'correct': 0.933, u'correct_pcnt': 0.95, u'correct_abs': 19}]
         self.assertEqual(expected[0], actual[0])
         self.assertEqual(expected[1], actual[1])
 
