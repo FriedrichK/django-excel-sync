@@ -1,3 +1,5 @@
+import sys
+
 from django.db.models.signals import post_syncdb
 from django.dispatch import receiver
 
@@ -8,6 +10,9 @@ models_processed = []
 
 @receiver(post_syncdb)
 def import_spreadsheet_data(sender, **kwargs):
+    if 'test' in sys.argv:
+        print "'test' detected in sys.argv. Running in test mode. Not importing data from spreadsheets"
+        return
     models_left_to_process = get_models_left_to_process(kwargs["created_models"])
     for klass in models_left_to_process:
         if(is_spreadsheet_model(klass)):
